@@ -129,7 +129,7 @@ var DOMPropertyOperations = {
             return stringValue;
           }
         }
-      } else if (DOMProperty.isCustomAttribute(name)) {
+      } else if (DOMProperty.isWriteableAttribute(name)) {
         return DOMPropertyOperations.diffValueForAttribute(
           node,
           name,
@@ -198,7 +198,7 @@ var DOMPropertyOperations = {
           node.setAttribute(attributeName, '' + value);
         }
       }
-    } else if (DOMProperty.isCustomAttribute(name)) {
+    } else if (DOMProperty.isWriteableAttribute(name)) {
       DOMPropertyOperations.setValueForAttribute(node, name, value);
       return;
     }
@@ -276,7 +276,7 @@ var DOMPropertyOperations = {
       } else {
         node.removeAttribute(propertyInfo.attributeName);
       }
-    } else if (DOMProperty.isCustomAttribute(name)) {
+    } else if (DOMProperty.isWriteableAttribute(name)) {
       node.removeAttribute(name);
     }
 
