@@ -32,16 +32,12 @@ if (__DEV__) {
   var warnValidStyle = require('warnValidStyle');
   var dangerousStyleValue = require('dangerousStyleValue');
   var {
-    validateProperties: validateARIAProperties,
-  } = require('ReactDOMInvalidARIAHook');
-  var {
     validateProperties: validateInputPropertes,
   } = require('ReactDOMNullInputValuePropHook');
   var {
     validateProperties: validateUnknownPropertes,
   } = require('ReactDOMUnknownPropertyHook');
   var validatePropertiesInDevelopment = function(type, props) {
-    validateARIAProperties(type, props);
     validateInputPropertes(type, props);
     validateUnknownPropertes(type, props);
   };

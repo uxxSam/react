@@ -34,10 +34,8 @@ var setTextContent = require('setTextContent');
 
 if (__DEV__) {
   var warning = require('fbjs/lib/warning');
-  var ReactDOMInvalidARIAHook = require('ReactDOMInvalidARIAHook');
   var ReactDOMNullInputValuePropHook = require('ReactDOMNullInputValuePropHook');
   var ReactDOMUnknownPropertyHook = require('ReactDOMUnknownPropertyHook');
-  var {validateProperties: validateARIAProperties} = ReactDOMInvalidARIAHook;
   var {
     validateProperties: validateInputPropertes,
   } = ReactDOMNullInputValuePropHook;
@@ -66,7 +64,6 @@ var {
 
 if (__DEV__) {
   var validatePropertiesInDevelopment = function(type, props) {
-    validateARIAProperties(type, props);
     validateInputPropertes(type, props);
     validateUnknownPropertes(type, props);
   };
@@ -271,10 +268,7 @@ function setInitialDOMProperties(
       }
     } else if (isCustomComponentTag) {
       DOMPropertyOperations.setValueForAttribute(domElement, propKey, nextProp);
-    } else if (
-      DOMProperty.properties[propKey] ||
-      DOMProperty.isCustomAttribute(propKey)
-    ) {
+    } else if (!DOMProperty.isReservedProp(propKey)) {
       // If we're updating to null or undefined, we should remove the property
       // from the DOM node instead of inadvertently setting to a string. This
       // brings us in line with the same behavior we have on initial render.
@@ -315,10 +309,7 @@ function updateDOMProperties(
       } else {
         DOMPropertyOperations.deleteValueForAttribute(domElement, propKey);
       }
-    } else if (
-      DOMProperty.properties[propKey] ||
-      DOMProperty.isCustomAttribute(propKey)
-    ) {
+    } else if (!DOMProperty.isReservedProp(propKey)) {
       // If we're updating to null or undefined, we should remove the property
       // from the DOM node instead of inadvertently setting to a string. This
       // brings us in line with the same behavior we have on initial render.
@@ -926,28 +917,27 @@ var ReactDOMFiberComponent = {
           if (expectedStyle !== serverValue) {
             warnForPropDifference(propKey, serverValue, expectedStyle);
           }
-        } else if (
-          isCustomComponentTag ||
-          DOMProperty.isWriteableAttribute(propKey)
-        ) {
-          // $FlowFixMe - Should be inferred as not undefined.
-          extraAttributeNames.delete(propKey);
-          serverValue = DOMPropertyOperations.getValueForAttribute(
-            domElement,
-            propKey,
-            nextProp,
-          );
-          if (nextProp !== serverValue) {
-            warnForPropDifference(propKey, serverValue, nextProp);
+        } else if (!DOMProperty.isReservedProp(propKey)) {
+          propertyInfo = DOMProperty.properties[propKey];
+
+          if (!isCustomComponentTag && propertyInfo) {
+            // $FlowFixMe - Should be inferred as not undefined.
+            extraAttributeNames.delete(propertyInfo.attributeName);
+            serverValue = DOMPropertyOperations.getValueForProperty(
+              domElement,
+              propKey,
+              nextProp,
+            );
+          } else {
+            // $FlowFixMe - Should be inferred as not undefined.
+            extraAttributeNames.delete(propKey);
+            serverValue = DOMPropertyOperations.getValueForAttribute(
+              domElement,
+              propKey,
+              nextProp,
+            );
           }
-        } else if ((propertyInfo = DOMProperty.properties[propKey])) {
-          // $FlowFixMe - Should be inferred as not undefined.
-          extraAttributeNames.delete(propertyInfo.attributeName);
-          serverValue = DOMPropertyOperations.getValueForProperty(
-            domElement,
-            propKey,
-            nextProp,
-          );
+
           if (nextProp !== serverValue) {
             warnForPropDifference(propKey, serverValue, nextProp);
           }

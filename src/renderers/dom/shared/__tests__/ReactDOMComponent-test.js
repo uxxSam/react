@@ -1494,7 +1494,7 @@ describe('ReactDOMComponent', () => {
       );
     });
 
-    it('should warn about incorrect casing on properties (ssr)', () => {
+    it.skip('should warn about incorrect casing on properties (ssr)', () => {
       spyOn(console, 'error');
       ReactDOMServer.renderToString(
         React.createElement('input', {type: 'text', tabindex: '1'}),
@@ -1516,7 +1516,7 @@ describe('ReactDOMComponent', () => {
       expectDev(console.error.calls.argsFor(1)[0]).toContain('onKeyDown');
     });
 
-    it('should warn about incorrect casing on properties', () => {
+    it.skip('should warn about incorrect casing on properties', () => {
       spyOn(console, 'error');
       ReactTestUtils.renderIntoDocument(
         React.createElement('input', {type: 'text', tabindex: '1'}),
@@ -1857,7 +1857,7 @@ describe('ReactDOMComponent', () => {
       ReactDOMFeatureFlags.allowCustomAttributes = originalValue;
     });
 
-    describe('when set to false', function() {
+    describe.skip('when set to false', function() {
       beforeEach(function() {
         ReactDOMFeatureFlags.allowCustomAttributes = false;
       });

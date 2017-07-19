@@ -625,7 +625,7 @@ describe('ReactDOMServerIntegration', () => {
       });
     });
 
-    describe('aria attributes', function() {
+    describe.skip('aria attributes', function() {
       itRenders('simple strings', async render => {
         const e = await render(<div aria-label="hello" />);
         expect(e.getAttribute('aria-label')).toBe('hello');
