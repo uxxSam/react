@@ -15,7 +15,6 @@ describe('DOMPropertyOperations', () => {
   var DOMPropertyOperations;
   var DOMProperty;
   var ReactDOMComponentTree;
-  var ReactDOMFeatureFlags;
 
   beforeEach(() => {
     jest.resetModules();
@@ -25,7 +24,6 @@ describe('DOMPropertyOperations', () => {
     DOMPropertyOperations = require('DOMPropertyOperations');
     DOMProperty = require('DOMProperty');
     ReactDOMComponentTree = require('ReactDOMComponentTree');
-    ReactDOMFeatureFlags = require('ReactDOMFeatureFlags');
   });
 
   describe('setValueForProperty', () => {
