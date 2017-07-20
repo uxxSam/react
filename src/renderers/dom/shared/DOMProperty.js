@@ -11,8 +11,6 @@
 
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-
 var RESERVED_PROPS = {
   children: true,
   dangerouslySetInnerHTML: true,
@@ -26,122 +24,6 @@ var RESERVED_PROPS = {
   suppressContentEditableWarning: true,
   onFocusIn: true,
   onFocusOut: true,
-};
-
-function checkMask(value, bitmask) {
-  return (value & bitmask) === bitmask;
-}
-
-var DOMPropertyInjection = {
-  /**
-   * Mapping from normalized, camelcased property names to a configuration that
-   * specifies how the associated DOM property should be accessed or rendered.
-   */
-  MUST_USE_PROPERTY: 0x1,
-  HAS_BOOLEAN_VALUE: 0x4,
-  HAS_NUMERIC_VALUE: 0x8,
-  HAS_POSITIVE_NUMERIC_VALUE: 0x10 | 0x8,
-  HAS_OVERLOADED_BOOLEAN_VALUE: 0x20,
-
-  /**
-   * Inject some specialized knowledge about the DOM. This takes a config object
-   * with the following properties:
-   *
-   * Properties: object mapping DOM property name to one of the
-   * DOMPropertyInjection constants or null. If your attribute isn't in here,
-   * it won't get written to the DOM.
-   *
-   * DOMAttributeNames: object mapping React attribute name to the DOM
-   * attribute name. Attribute names not specified use the **lowercase**
-   * normalized name.
-   *
-   * DOMAttributeNamespaces: object mapping React attribute name to the DOM
-   * attribute namespace URL. (Attribute names not specified use no namespace.)
-   *
-   * DOMPropertyNames: similar to DOMAttributeNames but for DOM properties.
-   * Property names not specified use the normalized name.
-   *
-   * DOMMutationMethods: Properties that require special mutation methods. If
-   * `value` is undefined, the mutation method should unset the property.
-   *
-   * @param {object} domPropertyConfig the config as described above.
-   */
-  injectDOMPropertyConfig: function(domPropertyConfig) {
-    var Injection = DOMPropertyInjection;
-    var Properties = domPropertyConfig.Properties || {};
-    var DOMAttributeNamespaces = domPropertyConfig.DOMAttributeNamespaces || {};
-    var DOMAttributeNames = domPropertyConfig.DOMAttributeNames || {};
-    var DOMPropertyNames = domPropertyConfig.DOMPropertyNames || {};
-    var DOMMutationMethods = domPropertyConfig.DOMMutationMethods || {};
-
-    for (var propName in Properties) {
-      invariant(
-        !DOMProperty.properties.hasOwnProperty(propName),
-        "injectDOMPropertyConfig(...): You're trying to inject DOM property " +
-          "'%s' which has already been injected. You may be accidentally " +
-          'injecting the same DOM property config twice, or you may be ' +
-          'injecting two configs that have conflicting property names.',
-        propName,
-      );
-
-      var lowerCased = propName.toLowerCase();
-      var propConfig = Properties[propName];
-
-      var propertyInfo = {
-        attributeName: lowerCased,
-        attributeNamespace: null,
-        propertyName: propName,
-        mutationMethod: null,
-
-        mustUseProperty: checkMask(propConfig, Injection.MUST_USE_PROPERTY),
-        hasBooleanValue: checkMask(propConfig, Injection.HAS_BOOLEAN_VALUE),
-        hasNumericValue: checkMask(propConfig, Injection.HAS_NUMERIC_VALUE),
-        hasPositiveNumericValue: checkMask(
-          propConfig,
-          Injection.HAS_POSITIVE_NUMERIC_VALUE,
-        ),
-        hasOverloadedBooleanValue: checkMask(
-          propConfig,
-          Injection.HAS_OVERLOADED_BOOLEAN_VALUE,
-        ),
-      };
-      invariant(
-        propertyInfo.hasBooleanValue +
-          propertyInfo.hasNumericValue +
-          propertyInfo.hasOverloadedBooleanValue <=
-          1,
-        'DOMProperty: Value can be one of boolean, overloaded boolean, or ' +
-          'numeric value, but not a combination: %s',
-        propName,
-      );
-
-      if (__DEV__) {
-        DOMProperty.getPossibleStandardName[lowerCased] = propName;
-      }
-
-      if (DOMAttributeNames.hasOwnProperty(propName)) {
-        var attributeName = DOMAttributeNames[propName];
-        propertyInfo.attributeName = attributeName;
-        if (__DEV__) {
-          DOMProperty.getPossibleStandardName[attributeName] = propName;
-        }
-      }
-
-      if (DOMAttributeNamespaces.hasOwnProperty(propName)) {
-        propertyInfo.attributeNamespace = DOMAttributeNamespaces[propName];
-      }
-
-      if (DOMPropertyNames.hasOwnProperty(propName)) {
-        propertyInfo.propertyName = DOMPropertyNames[propName];
-      }
-
-      if (DOMMutationMethods.hasOwnProperty(propName)) {
-        propertyInfo.mutationMethod = DOMMutationMethods[propName];
-      }
-
-      DOMProperty.properties[propName] = propertyInfo;
-    }
-  },
 };
 
 /* eslint-disable max-len */
@@ -198,7 +80,460 @@ var DOMProperty = {
    *   Removed when strictly equal to false; present without a value when
    *   strictly equal to true; present with a value otherwise.
    */
-  properties: {},
+  properties: {
+    acceptCharset: {
+      attributeName: 'accept-charset',
+    },
+    allowFullScreen: {
+      attributeName: 'allowfullscreen',
+      hasBooleanValue: true,
+    },
+    async: {
+      attributeName: 'async',
+      hasBooleanValue: true,
+    },
+    autoPlay: {
+      attributeName: 'autoplay',
+      hasBooleanValue: true,
+    },
+    capture: {
+      attributeName: 'capture',
+      hasBooleanValue: true,
+    },
+    checked: {
+      attributeName: 'checked',
+      mustUseProperty: true,
+      hasBooleanValue: true,
+    },
+    className: {
+      attributeName: 'class',
+    },
+    cols: {
+      attributeName: 'cols',
+      hasNumericValue: true,
+    },
+    controls: {
+      attributeName: 'controls',
+      hasBooleanValue: true,
+    },
+    default: {
+      attributeName: 'default',
+      hasBooleanValue: true,
+    },
+    defer: {
+      attributeName: 'defer',
+      hasBooleanValue: true,
+    },
+    disabled: {
+      attributeName: 'disabled',
+      hasBooleanValue: true,
+    },
+    download: {
+      attributeName: 'download',
+      hasOverloadedBooleanValue: true,
+    },
+    formNoValidate: {
+      attributeName: 'formnovalidate',
+      hasBooleanValue: true,
+    },
+    hidden: {
+      attributeName: 'hidden',
+      hasBooleanValue: true,
+    },
+    htmlFor: {
+      attributeName: 'for',
+    },
+    httpEquiv: {
+      attributeName: 'http-equiv',
+    },
+    loop: {
+      attributeName: 'loop',
+      hasBooleanValue: true,
+    },
+    multiple: {
+      attributeName: 'multiple',
+      mustUseProperty: true,
+      hasBooleanValue: true,
+    },
+    muted: {
+      attributeName: 'muted',
+      mustUseProperty: true,
+      hasBooleanValue: true,
+    },
+    noValidate: {
+      attributeName: 'novalidate',
+      hasBooleanValue: true,
+    },
+    open: {
+      attributeName: 'open',
+      hasBooleanValue: true,
+    },
+    playsInline: {
+      attributeName: 'playsinline',
+      hasBooleanValue: true,
+    },
+    readOnly: {
+      attributeName: 'readonly',
+      hasBooleanValue: true,
+    },
+    required: {
+      attributeName: 'required',
+
+      hasBooleanValue: true,
+    },
+    reversed: {
+      attributeName: 'reversed',
+
+      hasBooleanValue: true,
+    },
+    rows: {
+      attributeName: 'rows',
+
+      hasNumericValue: true,
+      hasPositiveNumericValue: true,
+    },
+    rowSpan: {
+      attributeName: 'rowspan',
+
+      hasNumericValue: true,
+    },
+    scoped: {
+      attributeName: 'scoped',
+
+      hasBooleanValue: true,
+    },
+    seamless: {
+      attributeName: 'seamless',
+
+      hasBooleanValue: true,
+    },
+    selected: {
+      attributeName: 'selected',
+
+      mustUseProperty: true,
+      hasBooleanValue: true,
+    },
+    size: {
+      attributeName: 'size',
+
+      hasNumericValue: true,
+      hasPositiveNumericValue: true,
+    },
+    span: {
+      attributeName: 'span',
+
+      hasNumericValue: true,
+      hasPositiveNumericValue: true,
+    },
+    start: {
+      attributeName: 'start',
+
+      hasNumericValue: true,
+    },
+    itemScope: {
+      attributeName: 'itemscope',
+
+      hasBooleanValue: true,
+    },
+    value: {
+      attributeName: 'value',
+
+      mutationMethod: function(node, value) {
+        if (value == null) {
+          return node.removeAttribute('value');
+        }
+
+        // Number inputs get special treatment due to some edge cases in
+        // Chrome. Let everything else assign the value attribute as normal.
+        // https://github.com/facebook/react/issues/7253#issuecomment-236074326
+        if (node.type !== 'number' || node.hasAttribute('value') === false) {
+          node.setAttribute('value', '' + value);
+        } else if (
+          node.validity &&
+          !node.validity.badInput &&
+          node.ownerDocument.activeElement !== node
+        ) {
+          // Don't assign an attribute if validation reports bad
+          // input. Chrome will clear the value. Additionally, don't
+          // operate on inputs that have focus, otherwise Chrome might
+          // strip off trailing decimal places and cause the user's
+          // cursor position to jump to the beginning of the input.
+          //
+          // In ReactDOMInput, we have an onBlur event that will trigger
+          // this function again when focus is lost.
+          node.setAttribute('value', '' + value);
+        }
+      },
+    },
+    accentHeight: {
+      attributeName: 'accent-height',
+    },
+    alignmentBaseline: {
+      attributeName: 'alignment-baseline',
+    },
+    arabicForm: {
+      attributeName: 'arabic-form',
+    },
+    baselineShift: {
+      attributeName: 'baseline-shift',
+    },
+    capHeight: {
+      attributeName: 'cap-height',
+    },
+    clipPath: {
+      attributeName: 'clip-path',
+    },
+    clipRule: {
+      attributeName: 'clip-rule',
+    },
+    colorInterpolation: {
+      attributeName: 'color-interpolation',
+    },
+    colorInterpolationFilters: {
+      attributeName: 'color-interpolation-filters',
+    },
+    colorProfile: {
+      attributeName: 'color-profile',
+    },
+    colorRendering: {
+      attributeName: 'color-rendering',
+    },
+    dominantBaseline: {
+      attributeName: 'dominant-baseline',
+    },
+    enableBackground: {
+      attributeName: 'enable-background',
+    },
+    fillOpacity: {
+      attributeName: 'fill-opacity',
+    },
+    fillRule: {
+      attributeName: 'fill-rule',
+    },
+    filterRes: {
+      attributeName: 'filterRes',
+    },
+    filterUnits: {
+      attributeName: 'filterUnits',
+    },
+    floodColor: {
+      attributeName: 'flood-color',
+    },
+    floodOpacity: {
+      attributeName: 'flood-opacity',
+    },
+    fontFamily: {
+      attributeName: 'font-family',
+    },
+    fontSize: {
+      attributeName: 'font-size',
+    },
+    fontSizeAdjust: {
+      attributeName: 'font-size-adjust',
+    },
+    fontStretch: {
+      attributeName: 'font-stretch',
+    },
+    fontStyle: {
+      attributeName: 'font-style',
+    },
+    fontVariant: {
+      attributeName: 'font-variant',
+    },
+    fontWeight: {
+      attributeName: 'font-weight',
+    },
+    glyphName: {
+      attributeName: 'glyph-name',
+    },
+    glyphOrientationHorizontal: {
+      attributeName: 'glyph-orientation-horizontal',
+    },
+    glyphOrientationVertical: {
+      attributeName: 'glyph-orientation-vertical',
+    },
+    glyphRef: {
+      attributeName: 'glyphRef',
+    },
+    horizAdvX: {
+      attributeName: 'horiz-adv-x',
+    },
+    horizOriginX: {
+      attributeName: 'horiz-origin-x',
+    },
+    imageRendering: {
+      attributeName: 'image-rendering',
+    },
+    letterSpacing: {
+      attributeName: 'letter-spacing',
+    },
+    lightingColor: {
+      attributeName: 'lighting-color',
+    },
+    markerEnd: {
+      attributeName: 'marker-end',
+    },
+    markerMid: {
+      attributeName: 'marker-mid',
+    },
+    markerStart: {
+      attributeName: 'marker-start',
+    },
+    overlinePosition: {
+      attributeName: 'overline-position',
+    },
+    overlineThickness: {
+      attributeName: 'overline-thickness',
+    },
+    paintOrder: {
+      attributeName: 'paint-order',
+    },
+    panose1: {
+      attributeName: 'panose-1',
+    },
+    pointerEvents: {
+      attributeName: 'pointer-events',
+    },
+    renderingIntent: {
+      attributeName: 'rendering-intent',
+    },
+    shapeRendering: {
+      attributeName: 'shape-rendering',
+    },
+    stopColor: {
+      attributeName: 'stop-color',
+    },
+    stopOpacity: {
+      attributeName: 'stop-opacity',
+    },
+    strikethroughPosition: {
+      attributeName: 'strikethrough-position',
+    },
+    strikethroughThickness: {
+      attributeName: 'strikethrough-thickness',
+    },
+    strokeDasharray: {
+      attributeName: 'stroke-dasharray',
+    },
+    strokeDashoffset: {
+      attributeName: 'stroke-dashoffset',
+    },
+    strokeLinecap: {
+      attributeName: 'stroke-linecap',
+    },
+    strokeLinejoin: {
+      attributeName: 'stroke-linejoin',
+    },
+    strokeMiterlimit: {
+      attributeName: 'stroke-miterlimit',
+    },
+    strokeOpacity: {
+      attributeName: 'stroke-opacity',
+    },
+    strokeWidth: {
+      attributeName: 'stroke-width',
+    },
+    textAnchor: {
+      attributeName: 'text-anchor',
+    },
+    textDecoration: {
+      attributeName: 'text-decoration',
+    },
+    textRendering: {
+      attributeName: 'text-rendering',
+    },
+    underlinePosition: {
+      attributeName: 'underline-position',
+    },
+    underlineThickness: {
+      attributeName: 'underline-thickness',
+    },
+    unicodeBidi: {
+      attributeName: 'unicode-bidi',
+    },
+    unicodeRange: {
+      attributeName: 'unicode-range',
+    },
+    unitsPerEm: {
+      attributeName: 'units-per-em',
+    },
+    vAlphabetic: {
+      attributeName: 'v-alphabetic',
+    },
+    vHanging: {
+      attributeName: 'v-hanging',
+    },
+    vIdeographic: {
+      attributeName: 'v-ideographic',
+    },
+    vMathematical: {
+      attributeName: 'v-mathematical',
+    },
+    vectorEffect: {
+      attributeName: 'vector-effect',
+    },
+    vertAdvY: {
+      attributeName: 'vert-adv-y',
+    },
+    vertOriginX: {
+      attributeName: 'vert-origin-x',
+    },
+    vertOriginY: {
+      attributeName: 'vert-origin-y',
+    },
+    wordSpacing: {
+      attributeName: 'word-spacing',
+    },
+    writingMode: {
+      attributeName: 'writing-mode',
+    },
+    xHeight: {
+      attributeName: 'x-height',
+    },
+    xlinkActuate: {
+      attributeName: 'xlink:actuate',
+      attributeNamespace: 'http://www.w3.org/1999/xlink',
+    },
+    xlinkArcrole: {
+      attributeName: 'xlink:arcrole',
+      attributeNamespace: 'http://www.w3.org/1999/xlink',
+    },
+    xlinkHref: {
+      attributeName: 'xlink:href',
+      attributeNamespace: 'http://www.w3.org/1999/xlink',
+    },
+    xlinkRole: {
+      attributeName: 'xlink:role',
+      attributeNamespace: 'http://www.w3.org/1999/xlink',
+    },
+    xlinkShow: {
+      attributeName: 'xlink:show',
+      attributeNamespace: 'http://www.w3.org/1999/xlink',
+    },
+    xlinkTitle: {
+      attributeName: 'xlink:title',
+      attributeNamespace: 'http://www.w3.org/1999/xlink',
+    },
+    xlinkType: {
+      attributeName: 'xlink:type',
+      attributeNamespace: 'http://www.w3.org/1999/xlink',
+    },
+    xmlBase: {
+      attributeName: 'xml:base',
+      attributeNamespace: 'http://www.w3.org/XML/1998/namespace',
+    },
+    xmlnsXlink: {
+      attributeName: 'xmlns:xlink',
+    },
+    xmlLang: {
+      attributeName: 'xml:lang',
+      attributeNamespace: 'http://www.w3.org/XML/1998/namespace',
+    },
+    xmlSpace: {
+      attributeName: 'xml:space',
+      attributeNamespace: 'http://www.w3.org/XML/1998/namespace',
+    },
+  },
 
   /**
    * Mapping from lowercase property names to the properly cased version, used
@@ -223,8 +558,6 @@ var DOMProperty = {
   isReservedProp(name) {
     return RESERVED_PROPS.hasOwnProperty(name);
   },
-
-  injection: DOMPropertyInjection,
 };
 
 module.exports = DOMProperty;

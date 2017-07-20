@@ -83,7 +83,7 @@ var DOMPropertyOperations = {
       if (propertyInfo) {
         var mutationMethod = propertyInfo.mutationMethod;
         if (mutationMethod || propertyInfo.mustUseProperty) {
-          return node[propertyInfo.propertyName];
+          return node[name];
         } else {
           var attributeName = propertyInfo.attributeName;
 
@@ -181,7 +181,7 @@ var DOMPropertyOperations = {
       } else if (propertyInfo.mustUseProperty) {
         // Contrary to `setAttribute`, object properties are properly
         // `toString`ed by IE8/9.
-        node[propertyInfo.propertyName] = value;
+        node[name] = value;
       } else {
         var attributeName = propertyInfo.attributeName;
         var namespace = propertyInfo.attributeNamespace;
@@ -267,11 +267,10 @@ var DOMPropertyOperations = {
       if (mutationMethod) {
         mutationMethod(node, undefined);
       } else if (propertyInfo.mustUseProperty) {
-        var propName = propertyInfo.propertyName;
         if (propertyInfo.hasBooleanValue) {
-          node[propName] = false;
+          node[name] = false;
         } else {
-          node[propName] = '';
+          node[name] = '';
         }
       } else {
         node.removeAttribute(propertyInfo.attributeName);

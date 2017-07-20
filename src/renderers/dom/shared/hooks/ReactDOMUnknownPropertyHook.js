@@ -36,6 +36,17 @@ function getStackAddendum(debugID) {
 
 if (__DEV__) {
   var warnedProperties = {};
+  var possibleStandardNames = {
+    autofocus: 'autoFocus',
+    class: 'className',
+    for: 'htmlFor',
+    'accept-charset': 'acceptCharset',
+    'http-equiv': 'httpEquiv',
+  };
+
+  for (var key in DOMProperty.properties) {
+    possibleStandardNames[key.toLowerCase()] = key;
+  }
 
   var validateProperty = function(tagName, name, debugID) {
     var lowerCasedName = name.toLowerCase();
@@ -68,8 +79,8 @@ if (__DEV__) {
     }
 
     // data-* attributes should be lowercase; suggest the lowercase version
-    var standardName = DOMProperty.getPossibleStandardName.hasOwnProperty(name)
-      ? DOMProperty.getPossibleStandardName[name]
+    var standardName = possibleStandardNames.hasOwnProperty(name)
+      ? possibleStandardNames[name]
       : null;
 
     var hasBadCasing = standardName != null && standardName !== name;

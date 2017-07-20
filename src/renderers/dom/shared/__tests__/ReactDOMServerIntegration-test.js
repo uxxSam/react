@@ -2371,12 +2371,11 @@ describe('ReactDOMServerIntegration', () => {
       // be removed anyway when we switch to static injection.
       onAfterResetModules = () => {
         const DOMProperty = require('DOMProperty');
-        DOMProperty.injection.injectDOMPropertyConfig({
-          isCustomAttribute: function(name) {
-            return name.indexOf('foo-') === 0;
-          },
-          Properties: {foobar: null},
-        });
+
+        DOMProperty.properties.foobar = {
+          attributeName: 'foobar',
+          propertyName: 'foobar',
+        };
       };
       resetModules();
     });
