@@ -1294,19 +1294,18 @@ describe('ReactDOMInput', () => {
     });
 
     it('does not set the value attribute on number inputs if focused', () => {
-        var Input = getTestInput();
-        var stub = ReactTestUtils.renderIntoDocument(
-          <Input type="number" value="1" />,
-        );
-        var node = ReactDOM.findDOMNode(stub);
+      var Input = getTestInput();
+      var stub = ReactTestUtils.renderIntoDocument(
+        <Input type="number" value="1" />,
+      );
+      var node = ReactDOM.findDOMNode(stub);
 
-        node.focus();
+      node.focus();
 
-        ReactTestUtils.Simulate.change(node, {target: {value: '2'}});
+      ReactTestUtils.Simulate.change(node, {target: {value: '2'}});
 
-        expect(node.getAttribute('value')).toBe('1');
-      },
-    );
+      expect(node.getAttribute('value')).toBe('1');
+    });
 
     it('sets the value attribute on number inputs on blur', () => {
       var Input = getTestInput();
