@@ -115,9 +115,7 @@ describe('DOMPropertyOperations', () => {
     it('should use mutation method where applicable', () => {
       var foobarSetter = jest.fn();
       // inject foobar DOM property
-      DOMProperty.properties.foobar = {
-        mutationMethod: foobarSetter,
-      };
+      DOMProperty.mutationMethod.foobar = foobarSetter;
 
       DOMPropertyOperations.setValueForProperty(
         stubNode,
@@ -130,7 +128,7 @@ describe('DOMPropertyOperations', () => {
       expect(foobarSetter.mock.calls[0][1]).toBe('cows say moo');
     });
 
-    it('should set className to empty string instead of null', () => {
+    it.only('should set className to empty string instead of null', () => {
       DOMPropertyOperations.setValueForProperty(
         stubNode,
         'className',

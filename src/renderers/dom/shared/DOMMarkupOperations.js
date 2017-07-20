@@ -48,13 +48,13 @@ function isAttributeNameSafe(attributeName) {
 
 // shouldIgnoreValue() is currently duplicated in DOMPropertyOperations.
 // TODO: Find a better place for this.
-function shouldIgnoreValue(propertyInfo, value) {
+function shouldIgnoreValue(name, value) {
   return (
     value == null ||
-    (propertyInfo.hasBooleanValue && !value) ||
-    (propertyInfo.hasNumericValue && isNaN(value)) ||
-    (propertyInfo.hasPositiveNumericValue && value < 1) ||
-    (propertyInfo.hasOverloadedBooleanValue && value === false)
+    (DOMProperty.isBooleanValue(name) && !value) ||
+    (DOMProperty.isNumericValue(name) && isNaN(value)) ||
+    (DOMProperty.isPositiveNumericValue(name) && value < 1) ||
+    (DOMProperty.isOverloadedBooleanValue(name) && value === false)
   );
 }
 
@@ -86,20 +86,20 @@ var DOMMarkupOperations = {
    * @return {?string} Markup string, or null if the property was invalid.
    */
   createMarkupForProperty: function(name, value) {
-    var propertyInfo = DOMProperty.properties.hasOwnProperty(name)
-      ? DOMProperty.properties[name]
-      : null;
-    if (propertyInfo) {
-      if (shouldIgnoreValue(propertyInfo, value)) {
+    if (!DOMProperty.isReservedProp(name)) {
+      if (shouldIgnoreValue(name, value)) {
         return '';
       }
-      var attributeName = propertyInfo.attributeName;
+
+      var attributeName = DOMProperty.getAttributeName(name);
+
       if (
-        propertyInfo.hasBooleanValue ||
-        (propertyInfo.hasOverloadedBooleanValue && value === true)
+        DOMProperty.isBooleanValue(name) ||
+        (DOMProperty.isOverloadedBooleanValue(name) && value === true)
       ) {
         return attributeName + '=""';
       }
+
       return attributeName + '=' + quoteAttributeValueForBrowser(value);
     } else if (!DOMProperty.isReservedProp(name)) {
       if (value == null) {

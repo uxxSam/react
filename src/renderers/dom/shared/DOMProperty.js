@@ -26,6 +26,9 @@ var RESERVED_PROPS = {
   onFocusOut: true,
 };
 
+var XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
+var XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace';
+
 /* eslint-disable max-len */
 var ATTRIBUTE_NAME_START_CHAR =
   ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
@@ -59,9 +62,6 @@ var DOMProperty = {
    * attributeName:
    *   Used when rendering markup or with `*Attribute()`.
    * attributeNamespace
-   * propertyName:
-   *   Used on DOM node instances. (This includes properties that mutate due to
-   *   external factors.)
    * mutationMethod:
    *   If non-null, used instead of the property or `setAttribute()` after
    *   initial render.
@@ -80,458 +80,199 @@ var DOMProperty = {
    *   Removed when strictly equal to false; present without a value when
    *   strictly equal to true; present with a value otherwise.
    */
-  properties: {
-    acceptCharset: {
-      attributeName: 'accept-charset',
-    },
-    allowFullScreen: {
-      attributeName: 'allowfullscreen',
-      hasBooleanValue: true,
-    },
-    async: {
-      attributeName: 'async',
-      hasBooleanValue: true,
-    },
-    autoPlay: {
-      attributeName: 'autoplay',
-      hasBooleanValue: true,
-    },
-    capture: {
-      attributeName: 'capture',
-      hasBooleanValue: true,
-    },
-    checked: {
-      attributeName: 'checked',
-      mustUseProperty: true,
-      hasBooleanValue: true,
-    },
-    className: {
-      attributeName: 'class',
-    },
-    cols: {
-      attributeName: 'cols',
-      hasNumericValue: true,
-    },
-    controls: {
-      attributeName: 'controls',
-      hasBooleanValue: true,
-    },
-    default: {
-      attributeName: 'default',
-      hasBooleanValue: true,
-    },
-    defer: {
-      attributeName: 'defer',
-      hasBooleanValue: true,
-    },
-    disabled: {
-      attributeName: 'disabled',
-      hasBooleanValue: true,
-    },
-    download: {
-      attributeName: 'download',
-      hasOverloadedBooleanValue: true,
-    },
-    formNoValidate: {
-      attributeName: 'formnovalidate',
-      hasBooleanValue: true,
-    },
-    hidden: {
-      attributeName: 'hidden',
-      hasBooleanValue: true,
-    },
-    htmlFor: {
-      attributeName: 'for',
-    },
-    httpEquiv: {
-      attributeName: 'http-equiv',
-    },
-    loop: {
-      attributeName: 'loop',
-      hasBooleanValue: true,
-    },
-    multiple: {
-      attributeName: 'multiple',
-      mustUseProperty: true,
-      hasBooleanValue: true,
-    },
-    muted: {
-      attributeName: 'muted',
-      mustUseProperty: true,
-      hasBooleanValue: true,
-    },
-    noValidate: {
-      attributeName: 'novalidate',
-      hasBooleanValue: true,
-    },
-    open: {
-      attributeName: 'open',
-      hasBooleanValue: true,
-    },
-    playsInline: {
-      attributeName: 'playsinline',
-      hasBooleanValue: true,
-    },
-    readOnly: {
-      attributeName: 'readonly',
-      hasBooleanValue: true,
-    },
-    required: {
-      attributeName: 'required',
+  attributeName: {
+    acceptCharset: 'accept-charset',
+    allowFullScreen: 'allowfullscreen',
+    autoPlay: 'autoplay',
+    className: 'class',
+    formNoValidate: 'formnovalidate',
+    htmlFor: 'for',
+    httpEquiv: 'http-equiv',
+    noValidate: 'novalidate',
+    playsInline: 'playsinline',
+    readOnly: 'readonly',
+    rowSpan: 'rowspan',
+    itemScope: 'itemscope',
+    accentHeight: 'accent-height',
+    alignmentBaseline: 'alignment-baseline',
+    arabicForm: 'arabic-form',
+    baselineShift: 'baseline-shift',
+    capHeight: 'cap-height',
+    clipPath: 'clip-path',
+    clipRule: 'clip-rule',
+    colorInterpolation: 'color-interpolation',
+    colorInterpolationFilters: 'color-interpolation-filters',
+    colorProfile: 'color-profile',
+    colorRendering: 'color-rendering',
+    dominantBaseline: 'dominant-baseline',
+    enableBackground: 'enable-background',
+    fillOpacity: 'fill-opacity',
+    fillRule: 'fill-rule',
+    filterRes: 'filterRes',
+    filterUnits: 'filterUnits',
+    floodColor: 'flood-color',
+    floodOpacity: 'flood-opacity',
+    fontFamily: 'font-family',
+    fontSize: 'font-size',
+    fontSizeAdjust: 'font-size-adjust',
+    fontStretch: 'font-stretch',
+    fontStyle: 'font-style',
+    fontVariant: 'font-variant',
+    fontWeight: 'font-weight',
+    glyphName: 'glyph-name',
+    glyphOrientationHorizontal: 'glyph-orientation-horizontal',
+    glyphOrientationVertical: 'glyph-orientation-vertical',
+    glyphRef: 'glyphRef',
+    horizAdvX: 'horiz-adv-x',
+    horizOriginX: 'horiz-origin-x',
+    imageRendering: 'image-rendering',
+    letterSpacing: 'letter-spacing',
+    lightingColor: 'lighting-color',
+    markerEnd: 'marker-end',
+    markerMid: 'marker-mid',
+    markerStart: 'marker-start',
+    overlinePosition: 'overline-position',
+    overlineThickness: 'overline-thickness',
+    paintOrder: 'paint-order',
+    panose1: 'panose-1',
+    pointerEvents: 'pointer-events',
+    renderingIntent: 'rendering-intent',
+    shapeRendering: 'shape-rendering',
+    stopColor: 'stop-color',
+    stopOpacity: 'stop-opacity',
+    strikethroughPosition: 'strikethrough-position',
+    strikethroughThickness: 'strikethrough-thickness',
+    strokeDasharray: 'stroke-dasharray',
+    strokeDashoffset: 'stroke-dashoffset',
+    strokeLinecap: 'stroke-linecap',
+    strokeLinejoin: 'stroke-linejoin',
+    strokeMiterlimit: 'stroke-miterlimit',
+    strokeOpacity: 'stroke-opacity',
+    strokeWidth: 'stroke-width',
+    textAnchor: 'text-anchor',
+    textDecoration: 'text-decoration',
+    textRendering: 'text-rendering',
+    underlinePosition: 'underline-position',
+    underlineThickness: 'underline-thickness',
+    unicodeBidi: 'unicode-bidi',
+    unicodeRange: 'unicode-range',
+    unitsPerEm: 'units-per-em',
+    vAlphabetic: 'v-alphabetic',
+    vHanging: 'v-hanging',
+    vIdeographic: 'v-ideographic',
+    vMathematical: 'v-mathematical',
+    vectorEffect: 'vector-effect',
+    vertAdvY: 'vert-adv-y',
+    vertOriginX: 'vert-origin-x',
+    vertOriginY: 'vert-origin-y',
+    wordSpacing: 'word-spacing',
+    writingMode: 'writing-mode',
+    xHeight: 'x-height',
+    xlinkActuate: 'xlink:actuate',
+    xlinkArcrole: 'xlink:arcrole',
+    xlinkHref: 'xlink:href',
+    xlinkRole: 'xlink:role',
+    xlinkShow: 'xlink:show',
+    xlinkTitle: 'xlink:title',
+    xlinkType: 'xlink:type',
+    xmlBase: 'xml:base',
+    xmlnsXlink: 'xmlns:xlink',
+    xmlLang: 'xml:lang',
+    xmlSpace: 'xml:space',
+  },
 
-      hasBooleanValue: true,
-    },
-    reversed: {
-      attributeName: 'reversed',
+  attributeNamespace: {
+    xlinkActuate: XLINK_NAMESPACE,
+    xlinkArcrole: XLINK_NAMESPACE,
+    xlinkHref: XLINK_NAMESPACE,
+    xlinkRole: XLINK_NAMESPACE,
+    xlinkShow: XLINK_NAMESPACE,
+    xlinkTitle: XLINK_NAMESPACE,
+    xlinkType: XLINK_NAMESPACE,
+    xmlBase: XML_NAMESPACE,
+    xmlLang: XML_NAMESPACE,
+    xmlSpace: XML_NAMESPACE,
+  },
 
-      hasBooleanValue: true,
-    },
-    rows: {
-      attributeName: 'rows',
+  mustUseProperty: {
+    checked: true,
+    multiple: true,
+    muted: true,
+    selected: true,
+  },
 
-      hasNumericValue: true,
-      hasPositiveNumericValue: true,
-    },
-    rowSpan: {
-      attributeName: 'rowspan',
+  hasBooleanValue: {
+    allowFullScreen: true,
+    async: true,
+    autoPlay: true,
+    capture: true,
+    checked: true,
+    controls: true,
+    default: true,
+    defer: true,
+    disabled: true,
+    formNoValidate: true,
+    hidden: true,
+    loop: true,
+    multiple: true,
+    muted: true,
+    noValidate: true,
+    open: true,
+    playsInline: true,
+    readOnly: true,
+    required: true,
+    reversed: true,
+    scoped: true,
+    seamless: true,
+    selected: true,
+    itemScope: true,
+  },
 
-      hasNumericValue: true,
-    },
-    scoped: {
-      attributeName: 'scoped',
+  hasOverloadedBooleanValue: {
+    download: true,
+  },
 
-      hasBooleanValue: true,
-    },
-    seamless: {
-      attributeName: 'seamless',
+  hasNumericValue: {
+    cols: true,
+    rows: true,
+    rowSpan: true,
+    size: true,
+    span: true,
+    start: true,
+  },
 
-      hasBooleanValue: true,
-    },
-    selected: {
-      attributeName: 'selected',
+  hasPositiveNumericValue: {
+    rows: true,
+    size: true,
+    span: true,
+  },
 
-      mustUseProperty: true,
-      hasBooleanValue: true,
-    },
-    size: {
-      attributeName: 'size',
+  mutationMethod: {
+    value: function(node, value) {
+      if (value == null) {
+        return node.removeAttribute('value');
+      }
 
-      hasNumericValue: true,
-      hasPositiveNumericValue: true,
-    },
-    span: {
-      attributeName: 'span',
-
-      hasNumericValue: true,
-      hasPositiveNumericValue: true,
-    },
-    start: {
-      attributeName: 'start',
-
-      hasNumericValue: true,
-    },
-    itemScope: {
-      attributeName: 'itemscope',
-
-      hasBooleanValue: true,
-    },
-    value: {
-      attributeName: 'value',
-
-      mutationMethod: function(node, value) {
-        if (value == null) {
-          return node.removeAttribute('value');
-        }
-
-        // Number inputs get special treatment due to some edge cases in
-        // Chrome. Let everything else assign the value attribute as normal.
-        // https://github.com/facebook/react/issues/7253#issuecomment-236074326
-        if (node.type !== 'number' || node.hasAttribute('value') === false) {
-          node.setAttribute('value', '' + value);
-        } else if (
-          node.validity &&
-          !node.validity.badInput &&
-          node.ownerDocument.activeElement !== node
-        ) {
-          // Don't assign an attribute if validation reports bad
-          // input. Chrome will clear the value. Additionally, don't
-          // operate on inputs that have focus, otherwise Chrome might
-          // strip off trailing decimal places and cause the user's
-          // cursor position to jump to the beginning of the input.
-          //
-          // In ReactDOMInput, we have an onBlur event that will trigger
-          // this function again when focus is lost.
-          node.setAttribute('value', '' + value);
-        }
-      },
-    },
-    accentHeight: {
-      attributeName: 'accent-height',
-    },
-    alignmentBaseline: {
-      attributeName: 'alignment-baseline',
-    },
-    arabicForm: {
-      attributeName: 'arabic-form',
-    },
-    baselineShift: {
-      attributeName: 'baseline-shift',
-    },
-    capHeight: {
-      attributeName: 'cap-height',
-    },
-    clipPath: {
-      attributeName: 'clip-path',
-    },
-    clipRule: {
-      attributeName: 'clip-rule',
-    },
-    colorInterpolation: {
-      attributeName: 'color-interpolation',
-    },
-    colorInterpolationFilters: {
-      attributeName: 'color-interpolation-filters',
-    },
-    colorProfile: {
-      attributeName: 'color-profile',
-    },
-    colorRendering: {
-      attributeName: 'color-rendering',
-    },
-    dominantBaseline: {
-      attributeName: 'dominant-baseline',
-    },
-    enableBackground: {
-      attributeName: 'enable-background',
-    },
-    fillOpacity: {
-      attributeName: 'fill-opacity',
-    },
-    fillRule: {
-      attributeName: 'fill-rule',
-    },
-    filterRes: {
-      attributeName: 'filterRes',
-    },
-    filterUnits: {
-      attributeName: 'filterUnits',
-    },
-    floodColor: {
-      attributeName: 'flood-color',
-    },
-    floodOpacity: {
-      attributeName: 'flood-opacity',
-    },
-    fontFamily: {
-      attributeName: 'font-family',
-    },
-    fontSize: {
-      attributeName: 'font-size',
-    },
-    fontSizeAdjust: {
-      attributeName: 'font-size-adjust',
-    },
-    fontStretch: {
-      attributeName: 'font-stretch',
-    },
-    fontStyle: {
-      attributeName: 'font-style',
-    },
-    fontVariant: {
-      attributeName: 'font-variant',
-    },
-    fontWeight: {
-      attributeName: 'font-weight',
-    },
-    glyphName: {
-      attributeName: 'glyph-name',
-    },
-    glyphOrientationHorizontal: {
-      attributeName: 'glyph-orientation-horizontal',
-    },
-    glyphOrientationVertical: {
-      attributeName: 'glyph-orientation-vertical',
-    },
-    glyphRef: {
-      attributeName: 'glyphRef',
-    },
-    horizAdvX: {
-      attributeName: 'horiz-adv-x',
-    },
-    horizOriginX: {
-      attributeName: 'horiz-origin-x',
-    },
-    imageRendering: {
-      attributeName: 'image-rendering',
-    },
-    letterSpacing: {
-      attributeName: 'letter-spacing',
-    },
-    lightingColor: {
-      attributeName: 'lighting-color',
-    },
-    markerEnd: {
-      attributeName: 'marker-end',
-    },
-    markerMid: {
-      attributeName: 'marker-mid',
-    },
-    markerStart: {
-      attributeName: 'marker-start',
-    },
-    overlinePosition: {
-      attributeName: 'overline-position',
-    },
-    overlineThickness: {
-      attributeName: 'overline-thickness',
-    },
-    paintOrder: {
-      attributeName: 'paint-order',
-    },
-    panose1: {
-      attributeName: 'panose-1',
-    },
-    pointerEvents: {
-      attributeName: 'pointer-events',
-    },
-    renderingIntent: {
-      attributeName: 'rendering-intent',
-    },
-    shapeRendering: {
-      attributeName: 'shape-rendering',
-    },
-    stopColor: {
-      attributeName: 'stop-color',
-    },
-    stopOpacity: {
-      attributeName: 'stop-opacity',
-    },
-    strikethroughPosition: {
-      attributeName: 'strikethrough-position',
-    },
-    strikethroughThickness: {
-      attributeName: 'strikethrough-thickness',
-    },
-    strokeDasharray: {
-      attributeName: 'stroke-dasharray',
-    },
-    strokeDashoffset: {
-      attributeName: 'stroke-dashoffset',
-    },
-    strokeLinecap: {
-      attributeName: 'stroke-linecap',
-    },
-    strokeLinejoin: {
-      attributeName: 'stroke-linejoin',
-    },
-    strokeMiterlimit: {
-      attributeName: 'stroke-miterlimit',
-    },
-    strokeOpacity: {
-      attributeName: 'stroke-opacity',
-    },
-    strokeWidth: {
-      attributeName: 'stroke-width',
-    },
-    textAnchor: {
-      attributeName: 'text-anchor',
-    },
-    textDecoration: {
-      attributeName: 'text-decoration',
-    },
-    textRendering: {
-      attributeName: 'text-rendering',
-    },
-    underlinePosition: {
-      attributeName: 'underline-position',
-    },
-    underlineThickness: {
-      attributeName: 'underline-thickness',
-    },
-    unicodeBidi: {
-      attributeName: 'unicode-bidi',
-    },
-    unicodeRange: {
-      attributeName: 'unicode-range',
-    },
-    unitsPerEm: {
-      attributeName: 'units-per-em',
-    },
-    vAlphabetic: {
-      attributeName: 'v-alphabetic',
-    },
-    vHanging: {
-      attributeName: 'v-hanging',
-    },
-    vIdeographic: {
-      attributeName: 'v-ideographic',
-    },
-    vMathematical: {
-      attributeName: 'v-mathematical',
-    },
-    vectorEffect: {
-      attributeName: 'vector-effect',
-    },
-    vertAdvY: {
-      attributeName: 'vert-adv-y',
-    },
-    vertOriginX: {
-      attributeName: 'vert-origin-x',
-    },
-    vertOriginY: {
-      attributeName: 'vert-origin-y',
-    },
-    wordSpacing: {
-      attributeName: 'word-spacing',
-    },
-    writingMode: {
-      attributeName: 'writing-mode',
-    },
-    xHeight: {
-      attributeName: 'x-height',
-    },
-    xlinkActuate: {
-      attributeName: 'xlink:actuate',
-      attributeNamespace: 'http://www.w3.org/1999/xlink',
-    },
-    xlinkArcrole: {
-      attributeName: 'xlink:arcrole',
-      attributeNamespace: 'http://www.w3.org/1999/xlink',
-    },
-    xlinkHref: {
-      attributeName: 'xlink:href',
-      attributeNamespace: 'http://www.w3.org/1999/xlink',
-    },
-    xlinkRole: {
-      attributeName: 'xlink:role',
-      attributeNamespace: 'http://www.w3.org/1999/xlink',
-    },
-    xlinkShow: {
-      attributeName: 'xlink:show',
-      attributeNamespace: 'http://www.w3.org/1999/xlink',
-    },
-    xlinkTitle: {
-      attributeName: 'xlink:title',
-      attributeNamespace: 'http://www.w3.org/1999/xlink',
-    },
-    xlinkType: {
-      attributeName: 'xlink:type',
-      attributeNamespace: 'http://www.w3.org/1999/xlink',
-    },
-    xmlBase: {
-      attributeName: 'xml:base',
-      attributeNamespace: 'http://www.w3.org/XML/1998/namespace',
-    },
-    xmlnsXlink: {
-      attributeName: 'xmlns:xlink',
-    },
-    xmlLang: {
-      attributeName: 'xml:lang',
-      attributeNamespace: 'http://www.w3.org/XML/1998/namespace',
-    },
-    xmlSpace: {
-      attributeName: 'xml:space',
-      attributeNamespace: 'http://www.w3.org/XML/1998/namespace',
+      // Number inputs get special treatment due to some edge cases in
+      // Chrome. Let everything else assign the value attribute as normal.
+      // https://github.com/facebook/react/issues/7253#issuecomment-236074326
+      if (node.type !== 'number' || node.hasAttribute('value') === false) {
+        node.setAttribute('value', '' + value);
+      } else if (
+        node.validity &&
+        !node.validity.badInput &&
+        node.ownerDocument.activeElement !== node
+      ) {
+        // Don't assign an attribute if validation reports bad
+        // input. Chrome will clear the value. Additionally, don't
+        // operate on inputs that have focus, otherwise Chrome might
+        // strip off trailing decimal places and cause the user's
+        // cursor position to jump to the beginning of the input.
+        //
+        // In ReactDOMInput, we have an onBlur event that will trigger
+        // this function again when focus is lost.
+        node.setAttribute('value', '' + value);
+      }
     },
   },
 
@@ -557,6 +298,50 @@ var DOMProperty = {
    */
   isReservedProp(name) {
     return RESERVED_PROPS.hasOwnProperty(name);
+  },
+
+  hasAttributeName(name) {
+    return DOMProperty.attributeName.hasOwnProperty(name);
+  },
+
+  hasAttributeNamespace(name) {
+    return DOMProperty.attributeNamespace.hasOwnProperty(name);
+  },
+
+  getAttributeName(name) {
+    return DOMProperty.hasAttributeName(name)
+      ? DOMProperty.attributeName[name]
+      : name;
+  },
+
+  getAttributeNamespace(name) {
+    return DOMProperty.hasAttributeNamespace(name)
+      ? DOMProperty.attributeNamespace[name]
+      : null;
+  },
+
+  isBooleanValue(name) {
+    return DOMProperty.hasBooleanValue.hasOwnProperty(name);
+  },
+
+  isOverloadedBooleanValue(name) {
+    return DOMProperty.hasOverloadedBooleanValue.hasOwnProperty(name);
+  },
+
+  isNumericValue(name) {
+    return DOMProperty.hasNumericValue.hasOwnProperty(name);
+  },
+
+  isPositiveNumericValue(name) {
+    return DOMProperty.hasPositiveNumericValue.hasOwnProperty(name);
+  },
+
+  useProperty(name) {
+    return DOMProperty.mustUseProperty.hasOwnProperty(name);
+  },
+
+  useMutationMethod(name) {
+    return DOMProperty.mutationMethod.hasOwnProperty(name);
   },
 };
 

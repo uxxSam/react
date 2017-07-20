@@ -44,7 +44,7 @@ if (__DEV__) {
     'http-equiv': 'httpEquiv',
   };
 
-  for (var key in DOMProperty.properties) {
+  for (var key in DOMProperty.attributeName) {
     possibleStandardNames[key.toLowerCase()] = key;
   }
 
